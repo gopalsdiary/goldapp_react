@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Management - Goldsmith</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b;
+            --accent: #2563eb; --accent-light: #eff6ff; --green: #10b981; --red: #ef4444;
+            --orange: #f59e0b; --border: #e2e8f0; --r: 12px; --sh: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif }
+        body { background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Login Form */
+        #loginArea { width: 100%; max-width: 400px; margin-top: 10vh; }
+        .lc { background: var(--card); border-radius: var(--r); padding: 30px; box-shadow: var(--sh); border: 1px solid var(--border); }
+        .lc h2 { text-align: center; margin-bottom: 24px; color: var(--accent); }
+        .fi { margin-bottom: 20px; }
+        .fi label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .fi input { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; }
+        .fi input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+        .sbtn { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .sbtn:hover { filter: brightness(1.1); }
+        
+        /* Main Section */
+        #main { width: 100%; max-width: 800px; display: none; }
+        .nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:white; padding:12px 20px; border-radius:var(--r); box-shadow:var(--sh) }
+        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--muted); }
+        .logout { color: var(--red); cursor: pointer; font-size: 13px; text-decoration: underline; }
+        
+        /* Product Search and Details */
+        .tw { background: var(--card); border-radius: var(--r); padding: 24px; box-shadow: var(--sh); border: 1px solid var(--border); margin-bottom: 20px; }
+        .tw h3 { margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-box input { flex: 1; padding: 12px; border: 2px solid var(--accent); border-radius: 8px; font-size: 16px; font-weight: 600; text-align: center; }
+        
+        #itemSt { padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; font-weight:600; font-size:14px; display:none }
+        .item-info { background: #fdf2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; display: none; margin-bottom: 20px; }
+        .item-info h4 { color: #991b1b; margin-bottom: 5px; }
+        .item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 14px; }
+        .ig-item b { color: var(--muted); display: block; font-size: 11px; text-transform: uppercase; }
+        
+        /* Sale Form Style */
+        .fg { display: grid; gap: 15px; grid-template-columns: 1fr 1fr; margin-top: 15px; }
+        @media (max-width: 500px) { .fg { grid-template-columns: 1fr; } }
+        
+        .lov{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,.9);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:15px}
+        .lov.show{display:flex}
+        .ldr{width:40px;height:40px;border:4px solid var(--accent-light);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #f8fafc; color: var(--muted); text-align: left; padding: 12px 10px; font-weight: 600; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
+        .iid { background: var(--accent-light); color: var(--accent); font-weight: 700; padding: 3px 8px; border-radius: 6px; font-family: monospace; }
+        .tk { font-weight: 700; color: var(--green); }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div class="lov" id="lov"><div class="ldr"></div><div style="font-weight:600;color:var(--muted)">Updating Database...</div></div>
+
+    <!-- Login Section -->
+    <div id="loginArea">
+        <div class="lc">
+            <h2>🔐 Seller Login</h2>
+            <form id="loginForm">
+                <div class="fi"><label>Email Address</label><input type="email" id="email" placeholder="seller@example.com" required></div>
+                <div class="fi"><label>Password</label><input type="password" id="pass" placeholder="••••••••" required></div>
+                <button type="submit" class="sbtn">Sign In to Dashboard</button>
+                <div id="loginMsg" style="margin-top:15px; text-align:center; color:var(--red); font-size:13px; font-weight:600"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Section (Hidden initially) -->
+    <div id="main">
+        <div class="nav">
+            <div class="user-info">👤 <span id="userName">Seller</span></div>
+            <div class="logout" onclick="signOut()">Sign Out</div>
+        </div>
+
+        <!-- Sell Product Section -->
+        <div class="tw">
+            <h3>💰 Sell Product</h3>
+            <div class="search-box">
+                <input type="text" id="sIid" placeholder="Enter IID (e.g. 1001)" onkeyup="if(event.key==='Enter')searchItem()">
+                <button class="sbtn" style="width:100px; padding:0" onclick="searchItem()">🔍 Find</button>
+            </div>
+
+            <div id="itemSt"></div>
+
+            <div id="iInfo" class="item-info">
+                <h4>💍 Item Details</h4>
+                <div class="item-grid">
+                    <div class="ig-item"><b>Item Name</b><span id="vItem"></span></div>
+                    <div class="ig-item"><b>Weight</b><span id="vWt"></span></div>
+                    <div class="ig-item"><b>Item Type</b><span id="vKt"></span></div>
+                </div>
+
+                <form id="sellForm" onsubmit="saveSale(event)" style="margin-top:20px; border-top:1px dashed #fecaca; padding-top:20px">
+                    <div class="fg">
+                        <div class="fi"><label>Sale Weight (gm) *</label><input type="number" id="sWt" step=".001" oninput="calcSale()"></div>
+                        <div class="fi"><label>Sale Rate / gm</label><input type="number" id="sRate" step=".01" oninput="calcSale()"></div>
+                        <div class="fi"><label>Making Charge</label><input type="number" id="sMk" step=".01" value="0" oninput="calcSale()"></div>
+                        <div class="fi"><label>Discount</label><input type="number" id="sDisc" step=".01" value="0" required oninput="calcSale()"></div>
+                        <div class="fi"><label>Total Sale Price *</label><input type="number" id="sTotal" step=".01" required style="font-weight:700; border-color:var(--accent)"></div>
+                        <div class="fi"><label>Payment Method</label>
+                            <select id="sPay" style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:8px">
+                                <option>Cash</option><option>Card</option><option>Mobile Banking</option>
+                            </select>
+                        </div>
+                        <div class="fi" style="display:flex; align-items:flex-end">
+                            <button type="submit" class="sbtn" style="background:var(--green)">💰 Confirm Sale</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Sales Section -->
+        <div class="tw">
+            <h3>📈 Your Recent Sales</h3>
+            <div style="overflow-x:auto">
+                <table>
+                    <thead><tr><th>IID</th><th>Item</th><th>Sold Date</th><th>Amount</th></tr></thead>
+                    <tbody id="sellBd"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script>
+const db = window.kbSupabaseClient;
+let activeProduct = null;
+
+// --- LOGIN LOGIC ---
+document.getElementById('loginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const lMsg = document.getElementById('loginMsg');
+    lMsg.textContent = "Verifying...";
+    const { data, error } = await db.auth.signInWithPassword({
+        email: document.getElementById('email').value,
+        password: document.getElementById('pass').value,
+    });
+    if (error) { lMsg.textContent = "❌ " + error.message; }
+    else { loadSession(); }
+};
+
+async function loadSession() {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) {
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+        document.getElementById('userName').textContent = session.user.email;
+        loadSales();
+    }
+}
+
+async function signOut() {
+    await db.auth.signOut();
+    location.reload();
+}
+
+// Check session on load
+window.onload = loadSession;
+
+// --- SELL LOGIC ---
+function showLoader() { document.getElementById('lov').classList.add('show'); }
+function hideLoader() { document.getElementById('lov').classList.remove('show'); }
+function tk(n){return(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2})}
+
+async function searchItem() {
+    const iid = document.getElementById('sIid').value;
+    const st = document.getElementById('itemSt');
+    const info = document.getElementById('iInfo');
+    if(!iid) return;
+    
+    st.textContent = "Searching..."; st.style.display = 'block'; st.style.background = '#f1f5f9'; st.style.color = '#475569';
+    info.style.display = 'none';
+
+    try {
+        const { data, error } = await db.from('products').select('*').eq('iid', iid).maybeSingle();
+        if (error) throw error;
+        if (!data) {
+            st.textContent = "❌ Not found!"; st.style.background = '#fee2e2'; st.style.color = '#b91c1c';
+            return;
+        }
+        if (data.status === 'sold') {
+            st.textContent = "⚠️ This item is already SOLD!"; st.style.background = '#fef3c7'; st.style.color = '#92400e';
+            return;
+        }
+        
+        activeProduct = data;
+        st.style.display = 'none';
+        info.style.display = 'block';
+        document.getElementById('vItem').textContent = data.item_name;
+        document.getElementById('vWt').textContent = data.weight_gm + ' g';
+        document.getElementById('vKt').textContent = data.karat || '-';
+        
+        // Setup initial weight based on stock
+        document.getElementById('sellForm').reset();
+        document.getElementById('sWt').value = data.weight_gm;
+        calcSale();
+    } catch (e) { alert(e.message); }
+}
+
+function calcSale() {
+    if (!activeProduct) return;
+    const wt = parseFloat(document.getElementById('sWt').value) || 0;
+    const rate = parseFloat(document.getElementById('sRate').value) || 0;
+    const mk = parseFloat(document.getElementById('sMk').value) || 0;
+    const disc = parseFloat(document.getElementById('sDisc').value) || 0;
+    const total = (wt * rate) + mk - disc;
+    document.getElementById('sTotal').value = total.toFixed(2);
+}
+
+async function saveSale(e) {
+    e.preventDefault();
+    if (!activeProduct) return;
+    if (!confirm("Are you sure you want to finalize this sale?")) return;
+    
+    showLoader();
+    const stotal = parseFloat(document.getElementById('sTotal').value);
+    const profit = stotal - (activeProduct.purchase_total || 0);
+    
+    const payload = {
+        status: 'sold',
+        sold_at: new Date().toISOString(),
+        sale_rate: parseFloat(document.getElementById('sRate').value),
+        sale_making: parseFloat(document.getElementById('sMk').value),
+        sale_discount: parseFloat(document.getElementById('sDisc').value),
+        sale_total: stotal,
+        sale_payment_method: document.getElementById('sPay').value,
+        profit: profit
+    };
+
+    try {
+        const { error } = await db.from('products').update(payload).eq('id', activeProduct.id);
+        if (error) throw error;
+        alert("✅ Sale Confirmed Successfully!");
+        document.getElementById('iInfo').style.display = 'none';
+        document.getElementById('sIid').value = '';
+        activeProduct = null;
+        loadSales();
+    } catch (err) { alert(err.message); }
+    hideLoader();
+}
+
+async function loadSales() {
+    try {
+        const twoDaysAgo = new Date();
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // Show only last 2 days
+        const { data } = await db.from('products').select('*')
+            .eq('status','sold')
+            .gte('sold_at', twoDaysAgo.toISOString())
+            .order('sold_at', {ascending:false});
+        
+        const bd = document.getElementById('sellBd');
+        if (!data || data.length === 0) {
+            bd.innerHTML = '<tr><td colspan="4" style="text-align:center">No sales records</td></tr>';
+            return;
+        }
+        bd.innerHTML = data.map(r => `
+            <tr>
+                <td><span class="iid">#${r.iid}</span></td>
+                <td>${r.item_name}</td>
+                <td>${new Date(r.sold_at).toLocaleDateString('en-GB')}</td>
+                <td class="tk">${tk(r.sale_total)}</td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
+}
+</script>
+</body>
+</html>

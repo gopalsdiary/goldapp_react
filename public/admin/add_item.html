@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Item - Goldsmith</title>
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-color: #000;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f4;
+            --card-bg: #fff;
+            --text-color: #333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        
+        .card { background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 600px; }
+        .card h1 { margin-bottom: 20px; font-size: 24px; text-align: center; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; }
+        .form-group textarea { height: 100px; resize: vertical; }
+
+        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.2s; width: 100%; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-secondary { background: #eee; color: #333; margin-top: 10px; text-decoration: none; display: block; text-align: center; }
+        
+        #uploadStatus { margin-top: 15px; text-align: center; font-size: 14px; color: var(--accent-color); }
+        
+        .back-link { position: fixed; top: 20px; left: 20px; background: #fff; padding: 10px 15px; border-radius: 8px; box-shadow: var(--shadow); text-decoration: none; color: #333; font-weight: 500; }
+
+        /* Loading Overlay */
+        #uploadOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #overlayText { font-weight: 600; font-size: 18px; color: #000; }
+    </style>
+</head>
+<body>
+
+    <a href="admin_dashboard.html" class="back-link">← Back to Dashboard</a>
+
+    <div class="card">
+        <h1>✨ Add New Item</h1>
+        <form id="addPhotoForm">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="photoTitle" placeholder="Item title (Optional)">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="photoDescription" placeholder="Description"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Section</label>
+                <select id="photoSection" required>
+                    <option value="necklace">Necklace (নেকলেস)</option>
+                    <option value="chain">Chain (চেইন)</option>
+                    <option value="choker">Choker (চোকার)</option>
+                    <option value="long_necklace">Long Necklace (সীতাহার)</option>
+                    <option value="locket">Locket (লকেট)</option>
+                    <option value="mangalsutra">Mangalsutra (মঙ্গলসূত্র)</option>
+                    <option value="earrings">Earrings (কানের দুল)</option>
+                    <option value="jhumka">Jhumka (ঝুমকা)</option>
+                    <option value="ear_studs">Ear Studs (টপস)</option>
+                    <option value="bangles">Bangles (চুড়ি)</option>
+                    <option value="bala">Thick Bangles (বালা)</option>
+                    <option value="bracelet">Bracelet (ব্রেসলেট)</option>
+                    <option value="ring">Ring (আংটি)</option>
+                    <option value="nose_pin">Nose Pin (নাকফুল)</option>
+                    <option value="nose_ring">Nose Ring (নথ)</option>
+                    <option value="tikli">Headpiece (টিকলি)</option>
+                    <option value="crown">Tiara / Crown (মুকুট)</option>
+                    <option value="waist_chain">Waist Chain (কোমরবিছা)</option>
+                    <option value="anklet">Anklet (নূপুর)</option>
+                    <option value="gold_coin">Gold Coin (মুদ্রা)</option>
+                    <option value="gold_bar">Gold Bar (বার)</option>
+                    <option value="silver_jewelry">Silver Jewelry (রুপা)</option>
+                    <option value="silver_utensils">Silver Utensils (বাসন)</option>
+                    <option value="diamond_jewelry">Diamond Jewelry (হীরা)</option>
+                    <option value="precious_stones">Precious Stones (পাথর)</option>
+                    <option value="platinum_jewelry">Platinum (প্ল্যাটিনাম)</option>
+                    <option value="white_gold">White Gold (হোয়াইট গোল্ড)</option>
+                    <option value="cufflinks">Cufflinks (কাফলিংকস)</option>
+                    <option value="tie_pin">Tie Pin (টাই পিন)</option>
+                    <option value="weight_scale">Weight Scale (স্কেল)</option>
+                    <option value="touchstone">Touchstone (কষ্টিপাথর)</option>
+                    <option value="magnifying_glass">Loupe (ম্যাগনিফাইং)</option>
+                    <option value="others" selected>Others / Special</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Image File (Auto-generates Thumbnail)</label>
+                <input type="file" id="photoFile" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>OR Direct Image URL</label>
+                <input type="url" id="photoUrl" placeholder="https://example.com/image.jpg">
+            </div>
+            <div id="uploadStatus"></div>
+            <button type="submit" class="btn btn-primary" id="saveBtn">Save Item</button>
+            <a href="admin_dashboard.html" class="btn btn-secondary" id="cancelBtn">Cancel</a>
+        </form>
+    </div>
+
+    <div id="uploadOverlay">
+        <div class="spinner"></div>
+        <div id="overlayText">Uploading...</div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        const kbClient = window.kbSupabaseClient;
+        const IMGBB_API_KEY = '03cd19c7e6990d72a74e764559101b63';
+
+        window.onload = () => {
+            const token = localStorage.getItem('supabase_access_token');
+            if (!token || isTokenExpired(token)) {
+                window.location.href = 'login.html';
+                return;
+            }
+        };
+
+        async function uploadToImgBB(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('key', IMGBB_API_KEY);
+            const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (!data.success) throw new Error('ImgBB Upload failed');
+            return data.data.url;
+        }
+
+        async function createThumbnail(file) {
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > 600) { h *= 600/w; w = 600; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        canvas.toBlob(resolve, 'image/jpeg', 0.7);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function compressMainImage(file, maxSizeMB) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        const MAX_DIM = 4000;
+                        if (width > MAX_DIM || height > MAX_DIM) {
+                            if (width > height) {
+                                height *= MAX_DIM / width;
+                                width = MAX_DIM;
+                            } else {
+                                width *= MAX_DIM / height;
+                                height = MAX_DIM;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        let quality = 0.95;
+                        const targetSize = maxSizeMB * 1024 * 1024;
+
+                        const attemptCompression = (q) => {
+                            canvas.toBlob((blob) => {
+                                if (blob.size > targetSize && q > 0.1) {
+                                    attemptCompression(q - 0.1);
+                                } else {
+                                    const filename = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                                    resolve(new File([blob], filename, { type: 'image/jpeg' }));
+                                }
+                            }, 'image/jpeg', q);
+                        };
+                        attemptCompression(quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('addPhotoForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const overlay = document.getElementById('uploadOverlay');
+            const overlayText = document.getElementById('overlayText');
+            
+            try {
+                btn.disabled = true;
+                cancelBtn.style.pointerEvents = 'none';
+                cancelBtn.style.opacity = '0.5';
+                
+                overlay.style.display = 'flex';
+                overlayText.textContent = '⏳ Processing...';
+                
+                const file = document.getElementById('photoFile').files[0];
+                const directUrl = document.getElementById('photoUrl').value.trim();
+                let url = directUrl, thumb = directUrl;
+
+                if (file) {
+                    overlayText.textContent = '🔄 Compressing & Converting...';
+                    const processedFile = await compressMainImage(file, 3);
+
+                    overlayText.textContent = '📤 Uploading Main Image...';
+                    url = await uploadToImgBB(processedFile);
+                    overlayText.textContent = '📤 Generating & Uploading Thumbnail...';
+                    const tBlob = await createThumbnail(processedFile);
+                    const thumbFilename = `thumb-${processedFile.name}`;
+                    thumb = await uploadToImgBB(new File([tBlob], thumbFilename, {type:'image/jpeg'}));
+                }
+                
+                if (!url) throw new Error('Please select an image file or provide a URL.');
+
+                overlayText.textContent = '💾 Saving to Database...';
+                const { error } = await kbClient.from('goldsmith_database').insert([{
+                    title: document.getElementById('photoTitle').value,
+                    description: document.getElementById('photoDescription').value,
+                    section: document.getElementById('photoSection').value,
+                    image_url: url,
+                    thumbnail_url: thumb
+                }]);
+                
+                if (error) throw error;
+                
+                overlayText.textContent = '✅ Successfully Added!';
+                setTimeout(() => window.location.href = 'admin_dashboard.html', 1500);
+            } catch (err) { 
+                alert(err.message); 
+                overlay.style.display = 'none';
+                btn.disabled = false;
+                cancelBtn.style.pointerEvents = 'auto';
+                cancelBtn.style.opacity = '1';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.portal-card {
+  background: var(--card-white);
+  border: 1px solid var(--border-light);
+  border-radius: 32px;
+  padding: 40px 30px;
+  text-decoration: none;
+  color: var(--text-main);
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.portal-card:hover {
+  transform: translateY(-12px);
+  box-shadow: var(--shadow-intense);
+  border-color: var(--primary-light);
+}
+
+.card-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--bg-accent);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--primary);
+  transition: 0.3s ease;
+}
+
+.portal-card:hover .card-icon {
+  background: var(--primary);
+  color: #fff;
+  transform: scale(1.1) rotate(5deg);
+}
+
+.card-icon i, .material-icons {
+  font-size: 34px;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 750;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.card-desc {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.brand-accent {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Admin Login - Goldsmith</title>
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+	<style>
+		:root {
+			--primary: #0095f6;
+			--primary-hover: #007cc5;
+			--bg: #f0f2f5;
+			--card-bg: #ffffff;
+			--text: #1c1e21;
+			--muted: #65676b;
+			--border: #dddfe2;
+			--danger: #f02849;
+			--success: #42b72a;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Outfit', -apple-system, sans-serif;
+			background-color: var(--bg);
+			color: var(--text);
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.card {
+			width: 100%;
+			max-width: 400px;
+			background: var(--card-bg);
+			border-radius: 12px;
+			padding: 32px;
+			box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+			animation: cardFadeIn 0.6s ease-out;
+		}
+
+		@keyframes cardFadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.brand {
+			text-align: center;
+			margin-bottom: 24px;
+		}
+		.brand img {
+			width: 140px;
+			height: auto;
+			border-radius: 8px;
+			margin-bottom: 16px;
+		}
+		
+		h1 {
+			font-size: 24px;
+			font-weight: 700;
+			color: #1c1e21;
+			margin-bottom: 8px;
+			text-align: center;
+		}
+
+		p.muted {
+			color: var(--muted);
+			font-size: 15px;
+			line-height: 1.4;
+			margin-bottom: 24px;
+			text-align: center;
+		}
+
+		.form-group {
+			margin-bottom: 16px;
+		}
+
+		label {
+			display: block;
+			font-size: 13px;
+			font-weight: 600;
+			color: #4b4f56;
+			margin-bottom: 6px;
+		}
+
+		input {
+			width: 100%;
+			background: #fff;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			padding: 14px 16px;
+			font-size: 15px;
+			color: #1c1e21;
+			font-family: inherit;
+			transition: border-color 0.1s, box-shadow 0.1s;
+		}
+		input:focus {
+			outline: none;
+			border-color: var(--primary);
+			box-shadow: 0 0 0 2px #e7f3ff;
+		}
+		input::placeholder { color: #8d949e; }
+
+		button[type="submit"] {
+			width: 100%;
+			height: 48px;
+			margin-top: 8px;
+			background-color: var(--primary);
+			color: #fff;
+			border: none;
+			border-radius: 8px;
+			font-size: 18px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: background-color 0.2s;
+		}
+		button[type="submit"]:hover {
+			background-color: var(--primary-hover);
+		}
+		button:disabled {
+			opacity: 0.7;
+			cursor: not-allowed;
+		}
+
+		.helper-text {
+			font-size: 12px;
+			color: #8d949e;
+			text-align: center;
+			margin-top: 16px;
+			line-height: 1.4;
+		}
+
+		.status-msg {
+			margin-top: 16px;
+			padding: 12px;
+			border-radius: 8px;
+			font-size: 14px;
+			font-weight: 500;
+			display: none;
+			text-align: center;
+		}
+
+		.error {
+			background: #ffebe8;
+			color: var(--danger);
+			border: 1px solid #f5c2c7;
+		}
+		.success {
+			background: #e7f3ff;
+			color: var(--primary);
+			border: 1px solid #cce4ff;
+		}
+	</style>
+</head>
+<body>
+	<div class="blob blob-1"></div>
+	<div class="blob blob-2"></div>
+	<div class="card">
+		<div class="brand">
+			<img src="goldsmith.png" alt="Logo" style="box-shadow:0 50px 50px #0001;object-fit:cover;background:#fff;border:1px solid #eee;" onerror="this.style.display='none'" />
+			<h1>Admin Login</h1>
+		</div>
+		<p class="muted">Sign in with your email and password to access the dashboard.</p>
+
+		<form id="loginForm" novalidate>
+			<div class="form-group">
+				<label for="email">Email Address</label>
+				<input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+			</div>
+
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+			</div>
+
+			<button id="submitBtn" type="submit">Sign in</button>
+			
+			<div id="errorBox" class="status-msg error"></div>
+			<div id="successBox" class="status-msg success">Login successful. Redirecting…</div>
+
+			<div class="helper-text">
+				Only authorized administrators can access this panel.
+				All access attempts are logged.
+			</div>
+			<a href="../index.html" class="btn btn-secondary" style="text-decoration:none;">🖼️ <span
+                        class="hide-mobile">Home</span></a>
+		</form>
+	</div>
+
+	<!-- Supabase JS v2 -->
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<script src="auth.js"></script>
+	<script>
+		const supabaseClient = window.kbSupabaseClient;
+
+			// Helpers
+			const errorBox = document.getElementById('errorBox');
+			const successBox = document.getElementById('successBox');
+			const submitBtn = document.getElementById('submitBtn');
+			const form = document.getElementById('loginForm');
+
+		// ── Brute-force rate limiting (client-side) ───────────────────
+		const RATE_LIMIT_KEY  = 'goldsmith_login_attempts';
+		const LOCKOUT_KEY     = 'goldsmith_login_lockout';
+		const MAX_ATTEMPTS    = 5;
+		const LOCKOUT_MINUTES = 10;
+
+		function getRateLimit() {
+			return {
+				attempts: parseInt(sessionStorage.getItem(RATE_LIMIT_KEY) || '0', 10),
+				lockedUntil: parseInt(sessionStorage.getItem(LOCKOUT_KEY) || '0', 10)
+			};
+		}
+
+		function bumpAttempt() {
+			let { attempts } = getRateLimit();
+			attempts += 1;
+			sessionStorage.setItem(RATE_LIMIT_KEY, String(attempts));
+			if (attempts >= MAX_ATTEMPTS) {
+				const lockedUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+				sessionStorage.setItem(LOCKOUT_KEY, String(lockedUntil));
+			}
+			return attempts;
+		}
+
+		function resetAttempts() {
+			sessionStorage.removeItem(RATE_LIMIT_KEY);
+			sessionStorage.removeItem(LOCKOUT_KEY);
+		}
+
+		function isLockedOut() {
+			const { lockedUntil } = getRateLimit();
+			if (lockedUntil && Date.now() < lockedUntil) return true;
+			if (lockedUntil && Date.now() >= lockedUntil) {
+				resetAttempts(); // lockout expired
+			}
+			return false;
+		}
+
+		function showError(msg) {
+			errorBox.textContent = msg;
+			errorBox.style.display = 'block';
+			successBox.style.display = 'none';
+		}
+
+		function showSuccess(msg) {
+			successBox.textContent = msg;
+			successBox.style.display = 'block';
+			errorBox.style.display = 'none';
+		}
+
+		function isTokenExpired(token) {
+			try {
+				const payload = JSON.parse(atob(token.split('.')[1]));
+				const expMs = payload.exp * 1000;
+				return Date.now() >= (expMs - 30000); // 30s early
+			} catch (_) {
+				return true;
+			}
+		}
+
+		// If already authenticated, go straight to dashboard
+		(function autoRedirectIfLoggedIn() {
+			const token   = localStorage.getItem('supabase_access_token');
+			const session = localStorage.getItem('supabase_session');
+			if (token && session && !isTokenExpired(token)) {
+				window.location.href = 'admin_dashboard.html';
+			}
+		})();
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			errorBox.style.display = 'none';
+			successBox.style.display = 'none';
+
+			// Client-side lockout check
+			if (isLockedOut()) {
+				const { lockedUntil } = getRateLimit();
+				const mins = Math.ceil((lockedUntil - Date.now()) / 60000);
+				showError(`Too many failed attempts. Try again in ${mins} minute(s).`);
+				return;
+			}
+
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Signing in…';
+
+			const email    = document.getElementById('email').value.trim();
+			const password = document.getElementById('password').value;
+
+			if (!email || !password) {
+				showError('Email and password are required.');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Sign in';
+				return;
+			}
+
+			// Basic email format check
+			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				showError('Please enter a valid email address.');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Sign in';
+				return;
+			}
+
+			try {
+				const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+				if (error) throw error;
+
+				const session = data.session;
+				if (!session?.access_token) {
+					throw new Error('No session returned from Supabase.');
+				}
+
+				// Success: reset rate limit counter
+				resetAttempts();
+
+				// Persist for dashboard guard (matches `admin_dashboard.html` expectations)
+				localStorage.setItem('supabase_access_token', session.access_token);
+				localStorage.setItem('supabase_user', JSON.stringify(session.user));
+				localStorage.setItem('supabase_session', JSON.stringify(session));
+
+				showSuccess('Login successful. Redirecting…');
+				setTimeout(() => {
+					window.location.href = 'admin_dashboard.html';
+				}, 600);
+			} catch (err) {
+				// Failed attempt: bump counter
+				const attempts = bumpAttempt();
+				const remaining = MAX_ATTEMPTS - attempts;
+				let msg = err?.message || 'Login failed. Please try again.';
+				if (remaining > 0) {
+					msg += ` (${remaining} attempt${remaining !== 1 ? 's' : ''} remaining)`;
+				} else {
+					msg = `Too many failed attempts. You are locked out for ${LOCKOUT_MINUTES} minutes.`;
+				}
+				console.warn('[Login] Auth failed:', err?.message);
+				showError(msg);
+			} finally {
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Sign in';
+			}
+		});
+	</script>
+</body>
+</html>
