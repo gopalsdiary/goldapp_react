@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const LoanManager: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dash');
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     active: 0,
     outstandingAsol: 0,
     outstandingMunafa: 0,
@@ -11,14 +11,6 @@ const LoanManager: React.FC = () => {
     closedLoans: 0
   });
 
-  useEffect(() => {
-    // Initial data fetch would go here
-    const fetchStats = async () => {
-      // Simplification of statistics fetching logic
-      console.log("Fetching loan stats...");
-    };
-    fetchStats();
-  }, []);
 
   return (
     <div className="premium-container" style={{ padding: '0', maxWidth: '1000px' }}>

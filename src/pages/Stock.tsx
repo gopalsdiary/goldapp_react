@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const StockAnalysis: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dash');
-  const [valuation, setValuation] = useState(0);
+  const [valuation] = useState(0);
 
   return (
     <div className="premium-container" style={{ padding: '0', maxWidth: '1200px' }}>
@@ -63,7 +63,7 @@ const StockAnalysis: React.FC = () => {
       </main>
 
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
-         <a href="/" style={{ color: 'var(--primary-dark)', fontWeight: 600, textDecoration: 'none' }}>← Return to Portal</a>
+         <Link to="/" style={{ color: 'var(--primary-dark)', fontWeight: 600, textDecoration: 'none' }}>← Return to Portal</Link>
       </div>
     </div>
   );
