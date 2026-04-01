@@ -1,0 +1,7 @@
+# Cloudflare Pages Configuration
+# This file overrides the build settings in the dashboard.
+
+[pages]
+id = "goldapp_react" # You can check this from the Cloudflare Pages settings.
+build.command = "npm run build"
+build.output_directory = "dist"
