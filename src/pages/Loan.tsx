@@ -58,12 +58,25 @@ const LoanManager: React.FC = () => {
         .from('loan_transactions')
         .select('*')
         .order('txn_date', { ascending: true })
-        .order('created_at', { ascending: true });
+        .order('id', { ascending: true }); // Using ID for better order stability
 
       const lData = (loansData as Loan[]) || [];
       const tData = (txnsData as Transaction[]) || [];
       setLoans(lData);
       setTransactions(tData);
+
+      // Check for deep link right after fetching
+      const iidParam = searchParams.get('iid');
+      if (iidParam) {
+        const found = lData.find(l => l.iid === parseInt(iidParam));
+        if (found) {
+          const loanTxns = tData.filter(t => t.loan_id === found.id);
+          const info = await getLoanBalance(found, null, null, loanTxns);
+          setSelectedLoan(found);
+          setLoanInfo(info);
+          setActiveTab('acct');
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -87,10 +100,11 @@ const LoanManager: React.FC = () => {
       setSelectedLoan(null);
       setLoanInfo(null);
     }
-  }, [searchParams, loans]);
+  }, [searchParams]); // Removed 'loans' from dependency to prevent infinite loops, handled inside fetchData for initial load
 
   const loadAccount = async (loan: Loan) => {
     setLoading(true);
+    // Use the latest transactions state
     const loanTxns = transactions.filter(t => t.loan_id === loan.id);
     const info = await getLoanBalance(loan, null, null, loanTxns);
     setSelectedLoan(loan);
@@ -547,10 +561,12 @@ const LoanManager: React.FC = () => {
                     status: 'active'
                   }]).select();
                   if (error) throw error;
-                  if (data) {
-                    alert(`✅ লোন তৈরি হয়েছে! IID: #${data[0].iid}`);
+                  if (data && data[0]) {
+                    const newLoan = data[0];
+                    alert(`✅ লোন তৈরি হয়েছে! IID: #${newLoan.iid}`);
                     fetchData();
-                    setActiveTab('all');
+                    setSearchParams({ iid: newLoan.iid.toString() });
+                    loadAccount(newLoan);
                   }
                 } catch (error) {
                   alert('Error saving loan');
@@ -569,11 +585,15 @@ const LoanManager: React.FC = () => {
                   </div>
                   <div className="fi" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ fontSize: '12px', fontWeight: 700, color: '#4b5563' }}>লোনের পরিমাণ *</label>
-                    <input name="loan_amount" type="number" required style={{ padding: '10px', borderRadius: '8px', border: '1.5px solid #eee' }} />
+                    <input name="loan_amount" type="number" step="any" required style={{ padding: '10px', borderRadius: '8px', border: '1.5px solid #eee' }} />
                   </div>
                   <div className="fi" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ fontSize: '12px', fontWeight: 700, color: '#4b5563' }}>মুনাফার হার (%) *</label>
-                    <input name="interest_rate" type="number" defaultValue="3" required style={{ padding: '10px', borderRadius: '8px', border: '1.5px solid #eee' }} />
+                    <input name="interest_rate" type="number" step="any" defaultValue="3" required style={{ padding: '10px', borderRadius: '8px', border: '1.5px solid #eee' }} />
+                  </div>
+                  <div className="fi" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#4b5563' }}>মেয়াদ (মাস) *</label>
+                    <input name="loan_months" type="number" defaultValue="6" required style={{ padding: '10px', borderRadius: '8px', border: '1.5px solid #eee' }} />
                   </div>
                   <div className="fi" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ fontSize: '12px', fontWeight: 700, color: '#4b5563' }}>তারিখ *</label>
