@@ -14,28 +14,19 @@ const Home: React.FC = () => {
       </header>
 
       <div className="portal-grid">
-        <Link to="/loan" className="portal-card">
-          <div className="card-icon">
-            <span className="material-icons">payments</span>
-          </div>
-          <div className="card-content">
-            <div className="card-title">Loan Manager</div>
-            <div className="card-desc">Comprehensive tool for loan tracking and management.</div>
-          </div>
-        </Link>
-
-        <Link to="/stock" className="portal-card">
-          <div className="card-icon">
-            <span className="material-icons">analytics</span>
-          </div>
-          <div className="card-content">
-            <div className="card-title">Stock Analysis</div>
-            <div className="card-desc">Real-time stock valuation and inventory reporting.</div>
-          </div>
-        </Link>
-
-        {/* Existing Admin Link if needed */}
-        <a href="/admin/admin_dashboard.html" className="portal-card">
+        <a 
+          href="/admin/admin_dashboard.html" 
+          className="portal-card"
+          onClick={(e) => {
+            e.preventDefault();
+            const pwd = prompt("Enter Admin Password:");
+            if (pwd === '11223') {
+              window.location.href = e.currentTarget.href;
+            } else if (pwd !== null) {
+              alert("Access Denied: Incorrect password.");
+            }
+          }}
+        >
           <div className="card-icon">
             <span className="material-icons">business_center</span>
           </div>
