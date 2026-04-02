@@ -4,8 +4,7 @@ import { supabase } from '../lib/supabase';
 import type { 
   Loan, 
   Transaction, 
-  LoanBalance,
-  HistoryEntry
+  LoanBalance
 } from '../lib/loanUtils';
 import { 
   getLoanBalance, 
