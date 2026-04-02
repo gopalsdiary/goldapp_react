@@ -213,15 +213,27 @@ const LoanManager: React.FC = () => {
     
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlString;
-    tempDiv.style.width = '794px';
+    // Set width to exactly match A4 printable area width inside the PDF margin
+    tempDiv.style.width = '190mm'; 
     tempDiv.style.background = '#fff';
+    tempDiv.style.margin = '0';
+    tempDiv.style.padding = '0';
     
     const opt = {
-      margin: 10,
+      margin: [10, 10, 10, 10], // top, left, bottom, right
       filename: `Statement_${selectedLoan.iid}_${new Date().toLocaleDateString('en-GB').replace(/\//g,'-')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        letterRendering: true,
+        windowWidth: 800, // Important to prevent mobile-like compression
+        x: 0,
+        y: 0
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
     
     if ((window as any).html2pdf) {

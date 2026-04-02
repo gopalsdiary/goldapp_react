@@ -288,94 +288,92 @@ export function renderLoanStatement(loan: Loan, info: LoanBalance): string {
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + (loan.loan_months || 0));
     
-    return `<div style="padding: 15px; border: 1.5px solid #000; margin-bottom: 30px; color:#000; font-family: Inter, sans-serif; text-rendering: optimizeLegibility; letter-spacing: 0; word-spacing: 0;">
-        <div style="text-align:center; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px">
-            <h2 style="margin:0; font-size:14px; opacity:0.8">💰Statement</h2>
+    return `<div style="padding: 10mm; margin: 0; color:#000; font-family: Inter, Arial, sans-serif; box-sizing: border-box; width: 190mm; background: #fff;">
+        <div style="text-align:center; margin-bottom:15px; border-bottom:1.5pt solid #000; padding-bottom:8px">
+            <h1 style="margin:0; font-size:18px; text-transform:uppercase; letter-spacing:1px">লোন স্টেটমেন্ট (LOAN STATEMENT)</h1>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+        
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; page-break-inside: avoid;">
             <div style="flex:1">
-                <div style="display:inline-block; background:#000; color:#fff; padding:2px 6px; font-weight:800; font-size:11px; margin-bottom:6px; border-radius:2px">ID: ${loan.iid}</div>
-                <h2 style="margin:0; font-size:18px; font-weight:900; text-transform:uppercase">${loan.name}</h2>
-                <div style="font-size:10px; margin-top:5px; display:grid; grid-template-columns: repeat(2, 1fr); gap:4px">
-                    <span><b>📞 মোবাইল:</b> ${loan.mobile}</span>
-                    <span><b>💰 সুদের হার:</b> ${loan.interest_rate}%</span>
-                    <span><b>📅 শুরুর তারিখ:</b> ${fmtDate(loan.loan_date)}</span>
-                    <span><b>📅 শেষের তারিখ:</b> ${fmtDate(endDate.toISOString())}</span>
-                    <span><b>⏳ মেয়াদ:</b> ${loan.loan_months} মাস</span>
-                    <span><b>📦 জামানত:</b> ${loan.deposit_item || 'নেই'}</span>
+                <div style="display:inline-block; background:#000; color:#fff; padding:4px 10px; font-weight:800; font-size:12px; margin-bottom:10px; border-radius:3px">ACC IID: ${loan.iid}</div>
+                <h2 style="margin:0; font-size:24px; font-weight:900; color:#000">${loan.name}</h2>
+                <div style="font-size:13px; margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:8px; line-height:1.6">
+                    <div><b>📱 মোবাইল:</b> ${loan.mobile}</div>
+                    <div><b>📊 সুদের হার:</b> ${loan.interest_rate}% /মাস</div>
+                    <div><b>📅 শুরু:</b> ${fmtDate(loan.loan_date)}</div>
+                    <div><b>📅 শেষ:</b> ${fmtDate(endDate.toISOString())}</div>
+                    <div><b>⏳ মেয়াদ:</b> ${loan.loan_months} মাস</div>
+                    <div><b>📦 জামানত:</b> ${loan.deposit_item || 'নেই'}</div>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px">
-                ${loan.photo_url ? `<img src="${loan.photo_url}" style="width:70px; height:70px; border:2.5px solid #000; object-fit:cover; border-radius:6px">` : 
-                `<div style="width:70px; height:70px; border:2.5px solid #000; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:30px; background:#f0f0f0">👤</div>`}
-                <div style="text-align:right">
-                    <span style="font-size:9px; font-weight:700; display:block; margin-bottom:2px">স্ট্যাটাস</span>
-                    <span style="padding:4px 8px; border:2px solid #000; font-weight:900; font-size:10px; display:inline-block">${loan.status === 'active' ? 'সক্রিয়' : 'বন্ধ'}</span>
+            <div style="margin-left:20px; text-align:right">
+                ${loan.photo_url ? `<img src="${loan.photo_url}" style="width:100px; height:100px; border:3px solid #000; object-fit:cover; border-radius:8px">` : 
+                `<div style="width:100px; height:100px; border:3px solid #000; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:40px; background:#f8f9fa">👤</div>`}
+                <div style="margin-top:10px">
+                    <span style="padding:5px 12px; border:2.5px solid #000; font-weight:900; font-size:12px; display:inline-block; text-transform:uppercase">${loan.status === 'active' ? 'সক্রিয় (ACTIVE)' : 'বন্ধ (CLOSED)'}</span>
                 </div>
             </div>
         </div>
         
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;">
-            <div style="border:1.5px solid #000; padding:8px; text-align:center; background:#f8f9fa">
-                <div style="font-size:8px; font-weight:900; text-transform:uppercase; margin-bottom:4px">আসল লোন</div>
-                <div style="font-size:11px; font-weight:900">${tk(loan.loan_amount)}</div>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 30px; page-break-inside: avoid;">
+            <div style="border:2px solid #000; padding:12px; text-align:center;">
+                <div style="font-size:10px; font-weight:900; color:#666; text-transform:uppercase; margin-bottom:5px">মূল লোন</div>
+                <div style="font-size:16px; font-weight:900">${tk(loan.loan_amount)}</div>
             </div>
-            <div style="border:1.5px solid #000; padding:8px; text-align:center; background:#f8f9fa">
-                <div style="font-size:8px; font-weight:900; text-transform:uppercase; margin-bottom:4px">মোট মুনাফা</div>
-                <div style="font-size:11px; font-weight:900">${tk(info.totalInterest)}</div>
+            <div style="border:2px solid #000; padding:12px; text-align:center;">
+                <div style="font-size:10px; font-weight:900; color:#666; text-transform:uppercase; margin-bottom:5px">মোট মুনাফা</div>
+                <div style="font-size:16px; font-weight:900">${tk(info.totalInterest)}</div>
             </div>
-            <div style="border:1.5px solid #000; padding:8px; text-align:center; background:#f8f9fa">
-                <div style="font-size:8px; font-weight:900; text-transform:uppercase; margin-bottom:4px">মোট জমা</div>
-                <div style="font-size:11px; font-weight:900">${tk(info.totalPaid)}</div>
+            <div style="border:2px solid #000; padding:12px; text-align:center;">
+                <div style="font-size:10px; font-weight:900; color:#666; text-transform:uppercase; margin-bottom:5px">মোট জমা</div>
+                <div style="font-size:16px; font-weight:900">${tk(info.totalPaid)}</div>
             </div>
-            <div style="border:1.5px solid #000; padding:8px; text-align:center; background:#f8f9fa">
-                <div style="font-size:8px; font-weight:900; text-transform:uppercase; margin-bottom:4px">বর্তমান বাকি</div>
-                <div style="font-size:11px; font-weight:900">${tk(info.currentDue)}</div>
+            <div style="border:2px solid #000; padding:12px; text-align:center;">
+                <div style="font-size:10px; font-weight:900; color:#666; text-transform:uppercase; margin-bottom:5px">বর্তমান বাকি</div>
+                <div style="font-size:16px; font-weight:900; color:#dc2626">${tk(info.currentDue)}</div>
             </div>
         </div>
 
-        <div style="border:1.5px solid #000; padding:6px; background:#000; color:#fff; font-weight:700; font-size:11px; margin-bottom:8px;">
-            📝 লেনদেনের স্টেটমেন্ট
+        <div style="border:2px solid #000; padding:8px; background:#000; color:#fff; font-weight:900; font-size:13px; margin-bottom:0; page-break-inside: avoid;">
+            📝 লেনদেনের বিস্তারিত স্টেটমেন্ট (Transaction Details)
         </div>
-        <table style="width:100%; border-collapse:collapse; font-size:10px; color:#000; letter-spacing:0; word-spacing:0;">
+        <table style="width:100%; border-collapse:collapse; color:#000;">
             <thead>
                 <tr>
-                    <th style="border:1.5px solid #000; padding:6px; text-align:left; background:#e9ecef">Date</th>
-                    <th style="border:1.5px solid #000; padding:6px; text-align:left; background:#e9ecef">Description</th>
-                    <th style="border:1.5px solid #000; padding:6px; text-align:center; background:#e9ecef">Debit</th>
-                    <th style="border:1.5px solid #000; padding:6px; text-align:center; background:#e9ecef">Credit</th>
-                    <th style="border:1.5px solid #000; padding:6px; text-align:center; background:#e9ecef">Balance</th>
+                    <th style="border:2px solid #000; padding:10px; text-align:left; background:#f2f2f2; font-size:12px">তারিখ (Date)</th>
+                    <th style="border:2px solid #000; padding:10px; text-align:left; background:#f2f2f2; font-size:12px">বিবরণ (Desc)</th>
+                    <th style="border:2px solid #000; padding:10px; text-align:right; background:#f2f2f2; font-size:12px">ডেবিট (Dr.)</th>
+                    <th style="border:2px solid #000; padding:10px; text-align:right; background:#f2f2f2; font-size:12px">ক্রেডিট (Cr.)</th>
+                    <th style="border:2px solid #000; padding:10px; text-align:right; background:#f2f2f2; font-size:12px">ব্যালেন্স (Bal)</th>
                 </tr>
             </thead>
             <tbody>
-                ${info.history.map((h: any) => `<tr style="${h.isClosure ? 'background:#f0f0f0; font-weight:800' : ''}">
-                    <td style="border:1px solid #000; padding:6px;">${fmtDate(h.date)}</td>
-                    <td style="border:1px solid #000; padding:6px;">${h.desc}</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right">${h.debit > 0 ? tk(h.debit) : '-'}</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right">${h.credit > 0 ? tk(h.credit) : '-'}</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right">${tk(h.balance)}</td>
+                ${info.history.map((h: any) => `
+                <tr style="page-break-inside: avoid; ${h.isClosure ? 'background:#f9fafb; font-weight:bold' : ''}">
+                    <td style="border:1px solid #000; padding:10px; font-size:12px">${fmtDate(h.date)}</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px">${h.desc}</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px; text-align:right">${h.debit > 0 ? tk(h.debit) : '-'}</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px; text-align:right">${h.credit > 0 ? tk(h.credit) : '-'}</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px; text-align:right; font-weight:800">${tk(h.balance)}</td>
                 </tr>`).join('')}
                 ${(loan.status === 'active' && info.currentInterest > 0) ? `
-                <tr style="background:#f8f9fa; font-weight:800">
-                    <td style="border:1px solid #000; padding:6px;">${fmtDate(new Date().toISOString())}</td>
-                    <td style="border:1px solid #000; padding:6px;">আজকের হিসাব (মুনাফাসহ)</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right">${tk(info.currentInterest)}</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right">-</td>
-                    <td style="border:1px solid #000; padding:6px; text-align:right">${tk(info.currentDue)}</td>
+                <tr style="background:#fffbeb; font-weight:800; page-break-inside: avoid;">
+                    <td style="border:1px solid #000; padding:10px; font-size:12px">${fmtDate(new Date().toISOString())}</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px">আজকের হিসাব (মুনাফাসহ)</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px; text-align:right">${tk(info.currentInterest)}</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px; text-align:right">-</td>
+                    <td style="border:1px solid #000; padding:10px; font-size:12px; text-align:right">${tk(info.currentDue)}</td>
                 </tr>` : ''}
             </tbody>
             <tfoot>
-                <tr style="background:#f8f9fa; font-weight:900">
-                    <td colspan="4" style="border:1.5px solid #000; padding:8px; text-align:right; font-size:11px">Remaining Due Balance:</td>
-                    <td style="border:1.5px solid #000; padding:8px; text-align:right; font-size:13px">${tk(info.currentDue)}</td>
+                <tr style="background:#f2f2f2; font-weight:900; page-break-inside: avoid;">
+                    <td colspan="4" style="border:2px solid #000; padding:12px; text-align:right; font-size:14px">সর্বমোট বকেয়া (Remaining Due Balance):</td>
+                    <td style="border:2px solid #000; padding:12px; text-align:right; font-size:16px; color:#dc2626">${tk(info.currentDue)}</td>
                 </tr>
-            </tfoot>
         </table>
         
-        <div style="margin-top:40px; display:flex; justify-content:flex-end">
-            <div style="text-align:center; width:150px">
-                <div style="border-top:1.5px solid #000; padding-top:4px; font-size:10px">গ্রাহকের স্বাক্ষর</div>
-            </div>
+        <div style="margin-top:20px; text-align:center; font-size:10px; color:#666; border-top:1px solid #eee; padding-top:10px">
+            This is a computer generated statement.
         </div>
     </div>`;
 }
